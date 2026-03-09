@@ -1,0 +1,15 @@
+{
+    "name": "my-antigravity-skills",
+    "version": "1.0.1",
+    "description": "My personal collection of Antigravity skills",
+    "scripts": {
+        "release": "standard-version",
+        "release:patch": "standard-version --release-as patch",
+        "release:minor": "standard-version --release-as minor",
+        "release:major": "standard-version --release-as major",
+        "release:dry": "standard-version --dry-run"
+    },
+    "devDependencies": {
+        "standard-version": "^9.5.0"
+    }
+}
