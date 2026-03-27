@@ -25,6 +25,7 @@ yarn-error.log*
 # Skill development artifacts
 artifacts/
 skill_search.json
+.gemini/
 
 # IDEs and editors
 .idea/
