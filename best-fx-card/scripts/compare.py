@@ -91,7 +91,7 @@ def main():
             'currency': currency,
             'amount': amount,
             'cheapest_rmb': cheapest_rmb,
-            'top10': rows[:10]
+            'top20': rows[:20]
         }
         
         if cheapest_rmb < best_overall_rmb:
@@ -106,8 +106,8 @@ def main():
     
     if best_overall_option:
         print(f"\\n🏆 THE BEST DEAL IS: {best_overall_option.upper()} (Estimated: {best_overall_rmb} RMB) 🏆\\n")
-        print(f"Here are the top 10 most suitable bank cards for {best_overall_option.upper()}:")
-        for i, row in enumerate(all_results[best_overall_option]['top10']):
+        print(f"Here are the top 20 most suitable bank cards for {best_overall_option.upper()}:")
+        for i, row in enumerate(all_results[best_overall_option]['top20']):
             card_name = row[2]
             rmb_cost = row[-2]
             print(f"{i+1}. {card_name} -> {rmb_cost} RMB")

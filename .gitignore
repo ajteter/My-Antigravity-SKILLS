@@ -35,3 +35,6 @@ skill_search.json
 .project
 .classpath
 .settings/
+
+# steam own
+steam-fx-card/
