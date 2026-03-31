@@ -26,6 +26,7 @@ yarn-error.log*
 artifacts/
 skill_search.json
 .gemini/
+.agent/
 
 # IDEs and editors
 .idea/
