@@ -8,6 +8,13 @@ from html.parser import HTMLParser
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 
+CARD_NAMES = (
+    "中国银联信用卡",
+    "广发Visa美元卡",
+    "兴业Visa美元全币种卡",
+    "招商JCB美元全币种卡",
+)
+
 CURRENCY_ALIASES = {
     "usd": "usd",
     "us$": "usd",
@@ -213,6 +220,10 @@ def get_best_cards(currency: str, amount: str) -> Tuple[List[List[str]], Optiona
         if len(row) <= 10 or row[0] == '#':
             continue
 
+        card_name = row[2]
+        if not any(name in card_name for name in CARD_NAMES):
+            continue
+
         try:
             float(row[-2].replace(",", ""))
         except ValueError:
@@ -222,7 +233,7 @@ def get_best_cards(currency: str, amount: str) -> Tuple[List[List[str]], Optiona
 
     if parser.rows and not results:
         raise ParseError(
-            f"Fetched comparison page for {currency.upper()} {amount}, but no valid card rows were recognized. "
+            f"Fetched comparison page for {currency.upper()} {amount}, but no matching card rows were recognized. "
             "The upstream page structure may have changed."
         )
 
@@ -290,7 +301,7 @@ def main() -> int:
 
         normalized_key = f"{currency} {amount}"
         if not json_mode:
-            print(f"\n--- Querying best cards for {currency.upper()} {amount} ---")
+            print(f"\n--- Querying your cards for {currency.upper()} {amount} ---")
 
         try:
             rows, warning = get_best_cards(currency, amount)
@@ -337,11 +348,11 @@ def main() -> int:
                         "currency": currency,
                         "amount": amount,
                         "status": "no_matching_cards",
-                        "error": f"No data found or parsing error for {currency.upper()} {amount}.",
+                        "error": f"No matching hardcoded cards were found for {currency.upper()} {amount}.",
                     }
                 )
             else:
-                print(f"No data found or parsing error for {currency.upper()} {amount}.")
+                print(f"No matching hardcoded cards were found for {currency.upper()} {amount}.")
             continue
 
         cheapest_rmb = float(rows[0][-2].replace(',', ''))
@@ -349,7 +360,7 @@ def main() -> int:
             'currency': currency,
             'amount': amount,
             'cheapest_rmb': cheapest_rmb,
-            'top20': rows[:20],
+            'my_cards': rows,
             'warning': warning,
         }
 
@@ -365,7 +376,7 @@ def main() -> int:
                 "status": "ok",
                 "best_card": rows[0][2],
                 "best_rmb_cost": format_rmb(cheapest_rmb),
-                "card_rankings": build_json_card_rows(rows[:20]),
+                "card_rankings": build_json_card_rows(rows),
                 "warning": warning,
             }
         )
@@ -374,8 +385,8 @@ def main() -> int:
             print(f"Best card: {rows[0][2]} -> {format_rmb(cheapest_rmb)} RMB")
             if warning:
                 print(f"Note: {warning}")
-            print("Card rankings (Top 20):")
-            for i, row in enumerate(rows[:20], start=1):
+            print("Card rankings:")
+            for i, row in enumerate(rows, start=1):
                 print(f"{i}. {row[2]} -> {row[-2]} RMB")
 
         if cheapest_rmb < best_overall_rmb:
@@ -395,7 +406,7 @@ def main() -> int:
                 "normalized_input": best_overall_option,
                 "currency": best_data["currency"],
                 "amount": best_data["amount"],
-                "best_card": best_data["top20"][0][2],
+                "best_card": best_data["my_cards"][0][2],
                 "best_rmb_cost": format_rmb(best_overall_rmb),
                 "warning": best_data["warning"],
             }
@@ -408,23 +419,18 @@ def main() -> int:
     for item, data in all_results.items():
         print(
             f"{data['currency'].upper()} {data['amount']} -> Minimum {format_rmb(data['cheapest_rmb'])} RMB "
-            f"(using {data['top20'][0][2]})"
+            f"(using {data['my_cards'][0][2]})"
         )
         if data["warning"]:
             print(f"  提示: {data['warning']}")
 
     if best_overall_option:
         print(
-            f"\n🏆 THE BEST DEAL IS: {best_overall_option.upper()} "
-            f"(Estimated: {format_rmb(best_overall_rmb)} RMB) 🏆\n"
+            f"\nTHE BEST DEAL IS: {best_overall_option.upper()} "
+            f"(Estimated: {format_rmb(best_overall_rmb)} RMB)"
         )
-        print(f"Here are the top 20 most suitable bank cards for {best_overall_option.upper()}:")
-        for i, row in enumerate(all_results[best_overall_option]['top20']):
-            card_name = row[2]
-            rmb_cost = row[-2]
-            print(f"{i+1}. {card_name} -> {rmb_cost} RMB")
     else:
-        print("\nNo valid deals found.")
+        print("\nNo valid live deals found among your hardcoded cards.")
 
     return 2 if had_errors and not all_results else 0
 

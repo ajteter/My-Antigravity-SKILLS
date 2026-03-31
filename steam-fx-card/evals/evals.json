@@ -1,0 +1,29 @@
+{
+  "skill_name": "steam-fx-card",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Steam 美区是 US$5.99，日区是 980 JPY，帮我算一下实际人民币哪个更便宜。",
+      "expected_output": "Skill should trigger without asking for region or card details, normalize both prices, run the comparison script, and compare both results in RMB.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "这个价格是 US$12.49，直接帮我看哪张卡最省。",
+      "expected_output": "Skill should immediately parse a single price expressed as US$12.49, run the script, and return the best card plus RMB cost.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "阿区 4.2 美元，土区 149 里拉，日区 1200 日元，别问我卡，直接给我最低实际支出。",
+      "expected_output": "Skill should respect the instruction not to ask follow-up questions about cards, normalize the recognizable amounts, run the script for all valid currency pairs, and identify the cheapest overall option.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Steam 跨区价格比较一下：$9.99 USD, JPY 1500, EUR 7.99。",
+      "expected_output": "Skill should trigger on a generic cross-region comparison request, normalize mixed amount formats, and compare multiple currencies in one run.",
+      "files": []
+    }
+  ]
+}

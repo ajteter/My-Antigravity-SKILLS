@@ -21,6 +21,7 @@ yarn-error.log*
 /tmp/
 *.tmp
 *.temp
+__pycache__/
 
 # Skill development artifacts
 artifacts/
@@ -38,4 +39,4 @@ skill_search.json
 .settings/
 
 # steam own
-steam-fx-card/
+

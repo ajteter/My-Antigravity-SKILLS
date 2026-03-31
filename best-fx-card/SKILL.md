@@ -12,16 +12,18 @@ This skill helps you find the cheapest way to pay for overseas products when pri
 ## Usage / 用法
 
 ### 1. Agentic Activation / AI 助手激活
-当需要进行比价时，可以直接向 AI 助手下达类似指令：
+当需要进行外币比价时，可以直接向 AI 助手下达类似指令，例如跨站海淘或线下刷卡：
 - "帮我算一下 $100, 15000 JPY, 95 EUR 哪个最划算？"
 - "去美国买一个 500 刀的东西，刷哪张卡最省钱？"
 - "计算一下 800 欧换算成人民币的具体支出。"
 
-AI 将提取其中的币种和金额，并自动调用 `scripts/compare.py` 脚本：
+AI 会提取币种和金额，进行规范化，并自动调用 `scripts/compare.py` 脚本：
 
 ```bash
 python3 scripts/compare.py "usd 100" "jpy 15000" "eur 95"
 ```
+
+如果你希望获取供机器消费的结果，可以加入 `--json` 参数。脚本支持极为宽容的输入格式（如 "us$5.99", "1500 jpy" 等），会自动解析。
 
 The script will:
 1. Fetch live exchange rates and card fees from kylc.com for every currency.
