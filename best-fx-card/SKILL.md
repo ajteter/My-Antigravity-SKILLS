@@ -1,34 +1,42 @@
 ---
 name: best-fx-card
-description: Compare overseas product prices in different currencies to find the best deal and the top 20 most suitable bank cards using kylc.com. Use when the user wants to compare multiple foreign currency prices and find out which currency and bank card is cheapest in RMB. 自动查询和比较外币价格，找出最划算的支付币种及推荐的前20张信用卡。
+description: Compares overseas prices across currencies and finds the lowest estimated RMB cost plus the top 20 bank-card recommendations using live data from kylc.com. Use when the user gives one or more foreign-currency amounts and wants to know which currency, price, or card is cheapest for general overseas spending, shopping, or travel. Don't use for Steam-only personal-card comparisons, exchange-rate news, or requests that do not include any parsable amount and currency.
 ---
 
-# Best FX Card (出国刷哪张卡)
+# Best FX Card
 
-This skill helps you find the cheapest way to pay for overseas products when prices are offered in multiple foreign currencies. It queries https://www.kylc.com/huilv/whichcard.html to calculate the exact RMB cost for each currency and card, and identifies the absolute best deal and the top 20 bank cards to use.
+Follow this procedure to compare general overseas prices across currencies.
 
-这个能力能够帮您自动计算境外消费时，多个外币标价中哪一个换算成人民币最便宜。它会通过实时拉取汇率数据，直接给出最优货币选项以及省钱对应的前20张信用卡排名。
+## Step 1: Check that the request fits
+1. Trigger only when the user wants a live card-based comparison for one or more concrete prices such as `100 USD`, `15000 JPY`, `€95`, or mixed lists of foreign-currency amounts.
+2. Do not use this skill for Steam-only comparisons that should use the user's hardcoded personal cards. Do not use it for exchange-rate explanation, market news, or generic finance questions without a concrete price input.
 
-## Usage / 用法
+## Step 2: Normalize inputs
+1. Extract each recognizable `currency amount` pair from the user request.
+2. Normalize each pair to the script format `currency amount`, for example `usd 100`, `jpy 15000`, `eur 95`.
+3. Keep user-facing labels such as store, country, or region names only for the final explanation. Do not pass those labels to the script.
+4. If no recognizable amount can be extracted, ask for the exact price and currency instead of guessing.
 
-### 1. Agentic Activation / AI 助手激活
-当需要进行外币比价时，可以直接向 AI 助手下达类似指令，例如跨站海淘或线下刷卡：
-- "帮我算一下 $100, 15000 JPY, 95 EUR 哪个最划算？"
-- "去美国买一个 500 刀的东西，刷哪张卡最省钱？"
-- "计算一下 800 欧换算成人民币的具体支出。"
+Accepted examples include:
+- `US$5.99`
+- `$100 USD`
+- `15000 JPY`
+- `JPY 15000`
+- `95 欧元`
 
-AI 会提取币种和金额，进行规范化，并自动调用 `scripts/compare.py` 脚本：
+## Step 3: Run the script
+1. Prefer JSON mode when summarizing results:
+   `python3 scripts/compare.py --json "usd 100" "jpy 15000"`
+2. Use plain-text mode only when the user explicitly wants the raw script output:
+   `python3 scripts/compare.py "usd 100" "jpy 15000"`
 
-```bash
-python3 scripts/compare.py "usd 100" "jpy 15000" "eur 95"
-```
+## Step 4: Summarize results
+1. Report the cheapest card and estimated RMB cost for each normalized input.
+2. If multiple inputs were provided, identify the overall cheapest option across all successful results.
+3. Mention that the ranking comes from live data on `kylc.com`.
+4. If helpful, mention that the script returns the top 20 card rankings for each successful input.
 
-如果你希望获取供机器消费的结果，可以加入 `--json` 参数。脚本支持极为宽容的输入格式（如 "us$5.99", "1500 jpy" 等），会自动解析。
-
-The script will:
-1. Fetch live exchange rates and card fees from kylc.com for every currency.
-2. Output a summary comparing the cheapest RMB price for each currency.
-3. Show the absolute best option and the top 20 most suitable bank cards for that currency.
-
-## Data Source / 数据来源
-The prices and rates are sourced from fast and free services: https://www.kylc.com/huilv/whichcard.html. The script automatically handles parsing the HTML table directly from the site without needing third-party dependencies outside of Python's standard library. 数据直接来源于快易理财网，内置原生 Python 解析器，无冗余依赖。
+## Error Handling
+1. If the script returns `input_parse_error`, tell the user which input could not be parsed and ask for a clearer price.
+2. If the script returns `fetch_error` or `page_parse_error`, say that the live comparison failed. Do not fabricate rates or fallback estimates.
+3. If the script includes a TLS compatibility warning, say that the result is suitable for personal reference and that another network can be used for extra confidence.

@@ -1,0 +1,25 @@
+{
+  "skill_name": "best-fx-card",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "帮我比较一下 100 美元、15000 日元、95 欧元，哪个实际人民币最便宜。",
+      "expected_output": "Skill should trigger, normalize all three prices, run scripts/compare.py, and identify the overall cheapest option plus per-input best card."
+    },
+    {
+      "id": 2,
+      "prompt": "日本官网是 JPY 12800，美国官网是 US$89.99，刷哪张卡更省？",
+      "expected_output": "Skill should trigger on a general overseas shopping comparison, keep store labels only in the final explanation, and compare both normalized inputs."
+    },
+    {
+      "id": 3,
+      "prompt": "帮我算一下 46.19 SGD、31 EUR、27.09 GBP 哪个最划算，顺便给我卡片排行。",
+      "expected_output": "Skill should trigger, normalize mixed formats, run the comparison script, and mention that top 20 card rankings are available for each successful input."
+    },
+    {
+      "id": 4,
+      "prompt": "只告诉我最近美元汇率走势，不用算价格。",
+      "expected_output": "Skill should not trigger because the request is market information rather than a concrete live price comparison."
+    }
+  ]
+}
